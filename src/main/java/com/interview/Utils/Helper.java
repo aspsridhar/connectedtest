@@ -34,14 +34,15 @@ public class Helper {
 	 * It display application usage and gives error message
 	 * 
 	 * @param error
+	 * @throws ConnectedAppException
 	 */
-	public static void appUsage(String error) {
+	public static void appUsage(String error) throws ConnectedAppException {
 
-		StringBuffer sb = new StringBuffer(
-				" \n Usage: \n" + "Connected <fileName.txt> <city-name1> <city-name2>" + "\n Error===: " + error);
-		// IllegalArgumentException
-		System.out.println(sb);
-		throw new IllegalArgumentException(sb.toString());
+		StringBuffer sb = sb = new StringBuffer(
+				" \n Usage: " + "\n" + "Connected <fileName.txt> <city-name1> <city-name2>" + "\n Error===: " + error);
+
+		throw new ConnectedAppException(sb.toString());
+
 	}
 
 	/**

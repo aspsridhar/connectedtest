@@ -36,10 +36,10 @@ public class Connected {
 		// pairedCities=Helper.processConnectedCities(Helper.readFile(argParameters.getFileName()));
 
 		if (Helper.isCitiesLinked(pairedCities, argParameters.getFrom(), argParameters.getTo())) {
-			System.out.println("YES");
+			System.out.println(Messages.YES);
 			return true;
 		} else {
-			System.out.println("NO");
+			System.out.println(Messages.NO);
 			return false;
 		}
 

@@ -38,9 +38,7 @@ public class Helper {
 	 */
 	public static void appUsage(String error) throws ConnectedAppException {
 
-		StringBuffer sb = sb = new StringBuffer(
-				" \n Usage: " + "\n" + "Connected <fileName.txt> <city-name1> <city-name2>" + "\n Error===: " + error);
-
+		StringBuffer sb = sb = new StringBuffer(Messages.USAGE_MSG + error);
 		throw new ConnectedAppException(sb.toString());
 
 	}
@@ -55,13 +53,13 @@ public class Helper {
 		try {
 
 			if (!argParameters.getFileName().contains(".txt"))
-				appUsage("arg[0] should be file name");
+				appUsage(Messages.ARG0_ERROR_MSG);
 
 			if (isNumeric(argParameters.getFrom()))
-				appUsage("arg[1] should be city name");
+				appUsage(Messages.ARG1_ERROR_MSG);
 
 			if (isNumeric(argParameters.getTo()))
-				appUsage("arg[1] should be city name");
+				appUsage(Messages.ARG2_ERROR_MSG);
 		} catch (IllegalArgumentException argumentException) {
 			throw new ConnectedAppException(argumentException.getMessage());
 
@@ -92,7 +90,7 @@ public class Helper {
 
 			}
 		} catch (ConnectedAppException appException) {
-			System.out.println("=======File Not found Excpetion ========");
+
 			throw new ConnectedAppException(appException.getMessage());
 		}
 
@@ -118,10 +116,10 @@ public class Helper {
 				cities.add(hash_Set);
 			}
 		} catch (FileNotFoundException fileNotFoundException) {
-			System.out.println("=======File Not found Excpetion ========");
+
 			throw new ConnectedAppException(fileNotFoundException.getMessage());
 		} catch (IOException ioException) {
-			System.out.println("=======File IO Operation Issue  ========");
+
 			throw new ConnectedAppException(ioException.getMessage());
 		} catch (Exception ex) {
 			throw new ConnectedAppException(ex.getMessage());

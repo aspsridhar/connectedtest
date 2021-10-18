@@ -21,7 +21,6 @@ public class ConnectedApp {
 			}
 		} catch (ConnectedAppException ce) {
 			System.out.println("======"+ce.getMessage());
-			//ce.printStackTrace();
 		}
 
 	}

@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.interview.Utils.Helper;
 import com.interview.Utils.Messages;
+import com.interview.exception.ConnectedAppException;
 
 /**
  * 
@@ -20,7 +21,7 @@ import com.interview.Utils.Messages;
 
 public class Connected {
 
-	public static boolean connected(String[] args){
+	public static boolean connected(String[] args) throws ConnectedAppException{
 
 		ConnectedObj argParameters = new ConnectedObj();
 		argParameters.setFileName(args[0]);

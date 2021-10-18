@@ -14,6 +14,7 @@ import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import com.interview.code.ConnectedObj;
+import com.interview.exception.ConnectedAppException;
 
 public class Helper {
 
@@ -35,11 +36,12 @@ public class Helper {
 	 * @param error
 	 */
 	public static void appUsage(String error) {
-			System.out.println("Usage: ");
-			System.out.println("Connected <fileName.txt> <city-name1> <city-name2> ");
-			System.out.println("Error===: " + error);
-			// throw new IllegalArgumentException("three args required , arg1 should be
-			// filename.txt arg2 should be city1 arg3 should be city2");
+
+		StringBuffer sb = new StringBuffer(
+				" \n Usage: \n" + "Connected <fileName.txt> <city-name1> <city-name2>" + "\n Error===: " + error);
+		// IllegalArgumentException
+		System.out.println(sb);
+		throw new IllegalArgumentException(sb.toString());
 	}
 
 	/**
@@ -47,17 +49,22 @@ public class Helper {
 	 * 
 	 * @param argParameters
 	 */
-	public static void validate(ConnectedObj argParameters) {
+	public static void validate(ConnectedObj argParameters) throws ConnectedAppException {
 
-		if (!argParameters.getFileName().contains(".txt"))
-                    appUsage("arg[0] should be file name");
+		try {
 
-		if (isNumeric(argParameters.getFrom()))
-                    appUsage("arg[1] should be city name");
+			if (!argParameters.getFileName().contains(".txt"))
+				appUsage("arg[0] should be file name");
 
-		if (isNumeric(argParameters.getTo()))
-                    appUsage("arg[1] should be city name");
+			if (isNumeric(argParameters.getFrom()))
+				appUsage("arg[1] should be city name");
 
+			if (isNumeric(argParameters.getTo()))
+				appUsage("arg[1] should be city name");
+		} catch (IllegalArgumentException argumentException) {
+			throw new ConnectedAppException(argumentException.getMessage());
+
+		}
 	}
 
 	/**
@@ -66,25 +73,32 @@ public class Helper {
 	 * @param city1
 	 * @param city2
 	 * @return
+	 * @throws ConnectedAppException
 	 */
-	public static boolean isCitiesLinked(List<Set> pairedCities, String city1, String city2) {
+	public static boolean isCitiesLinked(List<Set> pairedCities, String city1, String city2)
+			throws ConnectedAppException {
 
-		List<Set> linkedCities = mergeLinkedSetOfCities(pairedCities);
+		try {
+			List<Set> linkedCities = mergeLinkedSetOfCities(pairedCities);
 
-		ListIterator<Set> listIterator = linkedCities.listIterator();
+			ListIterator<Set> listIterator = linkedCities.listIterator();
 
-		while (listIterator.hasNext()) {
-			Set setOfPairedCities = listIterator.next();
-			if (setOfPairedCities.contains(city1) && setOfPairedCities.contains(city2)) {
-				return true;
+			while (listIterator.hasNext()) {
+				Set setOfPairedCities = listIterator.next();
+				if (setOfPairedCities.contains(city1) && setOfPairedCities.contains(city2)) {
+					return true;
+				}
+
 			}
-
+		} catch (ConnectedAppException appException) {
+			System.out.println("=======File Not found Excpetion ========");
+			throw new ConnectedAppException(appException.getMessage());
 		}
 
 		return false;
 	}
 
-	public static List<Set> readFile(String fileName) {
+	public static List<Set> readFile(String fileName) throws ConnectedAppException {
 		List<Set> cities = new ArrayList<Set>();
 		File file = new File(fileName);
 		BufferedReader br;
@@ -97,55 +111,68 @@ public class Helper {
 				tokenizer = new StringTokenizer(line, ",");
 				Set<String> hash_Set = new HashSet<String>();
 				while (tokenizer.hasMoreElements()) {
-                                        String element = tokenizer.nextElement().toString().trim();
+					String element = tokenizer.nextElement().toString().trim();
 					hash_Set.add(element);
 				}
 				cities.add(hash_Set);
 			}
-		} catch (FileNotFoundException e) {
+		} catch (FileNotFoundException fileNotFoundException) {
 			System.out.println("=======File Not found Excpetion ========");
-			e.printStackTrace();
-		} catch (IOException e) {
+			throw new ConnectedAppException(fileNotFoundException.getMessage());
+		} catch (IOException ioException) {
 			System.out.println("=======File IO Operation Issue  ========");
-			e.printStackTrace();
+			throw new ConnectedAppException(ioException.getMessage());
+		} catch (Exception ex) {
+			throw new ConnectedAppException(ex.getMessage());
 		}
-		
+
 		return cities;
 
 	}
 
-    /**
-     * mergeLinkedSetOfCities will add all linked cities into one set by traverse through each set of cities
-     * @param pairedCities
-     * @return List<Set>
-     */
-	private static List<Set> mergeLinkedSetOfCities(List<Set> pairedCities) {
+	/**
+	 * mergeLinkedSetOfCities will add all linked cities into one set by traverse
+	 * through each set of cities
+	 * 
+	 * @param pairedCities
+	 * @return List<Set>
+	 */
+	private static List<Set> mergeLinkedSetOfCities(List<Set> pairedCities) throws ConnectedAppException {
+
 		List<Set> pairedCities2 = new ArrayList<Set>();
 
-		/** this method can be improvised  by using java 8 streams OR by implementing Comparator and overriding compare **/
-		boolean flag = false;
-		for (int i = 0; i < pairedCities.size(); i++) {
-			Set<String> set1 = pairedCities.get(i);
-			
-			for (int j = 1; j < pairedCities.size(); j++) {
-				Set<String> set2 = pairedCities.get(j);
-			
-				for (String city1 : set1) {
+		/**
+		 * this method can be improvised by using java 8 streams OR by implementing
+		 * Comparator and overriding compare
+		 **/
+		try {
+			boolean flag = false;
+			for (int i = 0; i < pairedCities.size(); i++) {
+				Set<String> set1 = pairedCities.get(i);
 
-					for (String city2 : set2) {
-						if (city1.equalsIgnoreCase(city2)) {
-							flag = true;
+				for (int j = 1; j < pairedCities.size(); j++) {
+					Set<String> set2 = pairedCities.get(j);
+
+					for (String city1 : set1) {
+
+						for (String city2 : set2) {
+							if (city1.equalsIgnoreCase(city2)) {
+								flag = true;
+							}
 						}
 					}
-				}
-				if (flag) {
-					set2.addAll(set1);
-					pairedCities2.add(set2);
-				}
-				flag = false;
+					if (flag) {
+						set2.addAll(set1);
+						pairedCities2.add(set2);
+					}
+					flag = false;
 
+				}
 			}
+		} catch (Exception ex) {
+			throw new ConnectedAppException(ex.getMessage());
 		}
+
 		return pairedCities2;
 	}
 
